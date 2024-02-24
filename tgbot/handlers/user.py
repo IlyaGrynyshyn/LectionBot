@@ -59,15 +59,22 @@ async def user_start(message: Message, state: FSMContext):
 @user_router.message(RegisterUser.registration_email)
 async def register_phone(message: Message, state: FSMContext):
     email = message.text
-    print(email)
-    if re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-        db.add_user(name=message.from_user.full_name, telegram_id=message.from_user.id, email=email)
+    if re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+        db.add_user(
+            name=message.from_user.full_name,
+            telegram_id=message.from_user.id,
+            email=email,
+        )
         message_text = """
         🤗 Дякуємо, що залишила свої пошту
         """
         await message.answer(text=message_text)
         await asyncio.sleep(2)
-        await send_message(bot, message.from_user.id, "I will send this message in 1 minute")
+        await send_message(
+            bot, message.from_user.id, "I will send this message in 1 minute"
+        )
         await state.clear()
     else:
-        await message.answer('❗️Будь ласка, введіть свій email в форматі example@ex.com')
+        await message.answer(
+            "❗️Будь ласка, введіть свій email в форматі example@ex.com"
+        )
