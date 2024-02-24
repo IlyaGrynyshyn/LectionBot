@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
-WORKDIR /usr/src/app/bot
+WORKDIR app/
 
-COPY requirements.txt /usr/src/app/bot
-RUN pip install -r /usr/src/app/bot/requirements.txt
-COPY tgbot_template_v3-master /usr/src/app/bot
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+COPY . .

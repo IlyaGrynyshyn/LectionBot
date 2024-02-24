@@ -5,7 +5,7 @@ from aiogram.types import Message
 
 
 class ConfigMiddleware(BaseMiddleware):
-    def  __init__(self, config) -> None:
+    def __init__(self, config) -> None:
         self.config = config
 
     async def __call__(

@@ -60,12 +60,14 @@ class Database:
         return self.execute(sql, parameters=(email, telegram_id), commit=True)
 
     def select_all_users(self):
-        sql = "SELECT name,phone, email FROM Users WHERE is_payed ='1'"
+        sql = "SELECT name,phone, email FROM Users"
+        return self.execute(sql=sql, fetchall=True)
+
+    def select_all_users_by_user_id(self):
+        sql = "SELECT telegram_id FROM Users"
         return self.execute(sql=sql, fetchall=True)
 
     def exist_user(self, telegram_id):
         sql = "SELECT * FROM Users WHERE telegram_id=?"
         data = self.execute(sql=sql, parameters=(telegram_id,), fetchone=True)
         return bool(data)
-
-

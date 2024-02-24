@@ -11,6 +11,8 @@ from tgbot.db.sqllite import Database
 from tgbot.handlers import routers_list
 from tgbot.middlewares.config import ConfigMiddleware
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 DB = Database()
 
 
