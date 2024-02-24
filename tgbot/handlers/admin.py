@@ -1,11 +1,12 @@
-from aiogram import Router, Bot
+from aiogram import Router, Bot, F
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from tgbot.config import load_config
 from tgbot.db.sqllite import Database
 from tgbot.filters.admin import AdminFilter
+from tgbot.keyboards.inline import make_post_keyboard
 from tgbot.misc.states import AdminMakePost
 from tgbot.services.broadcaster import broadcast
 
@@ -26,8 +27,16 @@ async def admin_post(message: Message, state: FSMContext):
     await state.set_state(AdminMakePost.make_post)
     await message.answer(
         "⚠ Будь обережна, ти в такому місці, де кожне повідомлення побачить кожен користувач боту, тому будь обережна 😄. "
-        "А тепер напиши мені пост, і я його опублікую."
+        "А тепер напиши мені пост, і я його опублікую.",
+        reply_markup=make_post_keyboard(),
     )
+
+
+@admin_router.callback_query(F.data == "cancel_make_post")
+async def admin_cancel_make_post(query: CallbackQuery, state: FSMContext):
+    await query.answer()
+    await query.message.answer("Ти вийшла з режиму створення посту")
+    await state.clear()
 
 
 @admin_router.message(AdminMakePost.make_post)
@@ -36,15 +45,15 @@ async def admin_make_post(message: Message, state: FSMContext):
     telegram_users = db.select_all_users_by_user_id()
     result_list = [item[0] for item in telegram_users]
     print(result_list)
-    admin_ids =  result_list
+    admin_ids = result_list
     if message.from_user.id not in admin_ids:
         return
     if not message.text and not message.photo and not message.video:
         await message.reply(
-            "‼ Ви не вказали текст або не прикріпили медіафайл для розсилки."
+            "‼ Ти не ввела текст або не прикріпила медіафайл для розсилки."
         )
         return
     await broadcast(bot, admin_ids, message=message, content_type=message.content_type)
 
-    await message.reply("🎉 Розсилка завершена! Для повторної розсилки вокористай /post")
+    await message.reply("🎉 Розсилка завершена! Для повторної розсилки використай /post")
     await state.clear()
