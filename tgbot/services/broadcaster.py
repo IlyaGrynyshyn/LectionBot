@@ -10,7 +10,7 @@ from aiogram.types import InlineKeyboardMarkup
 
 async def send_message(
     bot: Bot,
-    user_id: Union[int, str],
+    user_id: int,
     text: str,
     disable_notification: bool = False,
     reply_markup: InlineKeyboardMarkup = None,
@@ -54,7 +54,7 @@ async def send_message(
 
 async def send_photo(
     bot: Bot,
-    user_id: Union[int, str],
+    user_id: int,
     photo: str,
     disable_notification: bool = False,
     reply_markup: InlineKeyboardMarkup = None,
@@ -90,7 +90,7 @@ async def send_photo(
 
 async def send_video(
     bot: Bot,
-    user_id: int | str,
+    user_id: int,
     video: str,
     disable_notification: bool = False,
     reply_markup: InlineKeyboardMarkup = None,
