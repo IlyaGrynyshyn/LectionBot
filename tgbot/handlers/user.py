@@ -20,7 +20,7 @@ scheduler = AsyncIOScheduler(timezone="Europe/Kyiv")
 user_router = Router()
 db = Database()
 config = load_config(".env")
-bot = Bot(token=config.tg_bot.token, parse_mode="HTML")
+bot = Bot(token=config.tg_bot.token)
 
 
 async def send_message_in_1_min(bot: Bot, user_id):
@@ -62,11 +62,12 @@ async def register_phone(message: Message, state: FSMContext):
     if re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
         db.add_user(
             name=message.from_user.full_name,
+            username=message.from_user.username,
             telegram_id=message.from_user.id,
             email=email,
         )
         message_text = """
-        🤗 Дякуємо, що залишила свої пошту
+        🤗 Дякуємо, що залишила свою пошту
         """
         await message.answer(text=message_text)
         await asyncio.sleep(2)
@@ -76,5 +77,5 @@ async def register_phone(message: Message, state: FSMContext):
         await state.clear()
     else:
         await message.answer(
-            "❗️Будь ласка, введіть свій email в форматі example@ex.com"
+            "❗️Будь ласка, введи свою email адресу в форматі example@ex.com"
         )
