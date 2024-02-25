@@ -1,17 +1,15 @@
 import asyncio
 import re
+from datetime import datetime, timedelta
 
 from aiogram import Router, Bot
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from tgbot.config import load_config
 from tgbot.db.sqllite import Database
-from datetime import datetime, timedelta
-
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
 from tgbot.misc.states import RegisterUser
 from tgbot.services.broadcaster import send_message
 

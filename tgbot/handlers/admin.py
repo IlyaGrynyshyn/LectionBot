@@ -4,6 +4,7 @@ import csv
 from aiogram import Router, Bot, F
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
+from aiogram.types import FSInputFile
 from aiogram.types import Message, CallbackQuery
 
 from tgbot.config import load_config
@@ -12,7 +13,6 @@ from tgbot.filters.admin import AdminFilter
 from tgbot.keyboards.inline import make_post_keyboard
 from tgbot.misc.states import AdminMakePost
 from tgbot.services.broadcaster import broadcast
-from aiogram.types import FSInputFile
 
 admin_router = Router()
 admin_router.message.filter(AdminFilter())
