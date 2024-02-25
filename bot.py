@@ -11,7 +11,7 @@ from tgbot.db.sqllite import Database
 from tgbot.handlers import routers_list
 from tgbot.middlewares.config import ConfigMiddleware
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from tgbot.services.broadcaster import broadcast_for_custom_message
 
 DB = Database()
 
@@ -20,9 +20,9 @@ async def on_startup(bot: Bot, admin_ids: list[int]):
     try:
         DB.create_table_users()
     except Exception as e:
-        print(e)
+        logging.exception(e)
 
-    # await bot.send_message(bot, admin_ids, text="Бот був запущений")
+    await broadcast_for_custom_message(bot, admin_ids, "Бот був запущений")
 
 
 def register_global_middlewares(dp: Dispatcher, config: Config, session_pool=None):

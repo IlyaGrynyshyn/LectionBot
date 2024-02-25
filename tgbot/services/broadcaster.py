@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from typing import Union, List
 
 from aiogram import Bot
 from aiogram import exceptions
@@ -126,7 +125,7 @@ async def send_video(
 
 async def broadcast(
     bot: Bot,
-    users: List[Union[str, int]],
+    users: list[int],
     message=None,
     text: str = None,
     disable_notification: bool = False,
@@ -152,9 +151,7 @@ async def broadcast(
                     bot, user_id, message.text, disable_notification, reply_markup
                 ):
                     count += 1
-                await asyncio.sleep(
-                    0.05
-                )  # 20 messages per second (Limit: 30 messages per second)
+                await asyncio.sleep(0.1)
         elif content_type == ContentType.PHOTO:
             largest_photo = max(
                 message.photo, key=lambda item: item.width * item.height
@@ -182,6 +179,27 @@ async def broadcast(
                 ):
                     count += 1
                 await asyncio.sleep(0.05)
+    finally:
+        logging.info(f"{count} messages successful sent.")
+
+    return count
+
+
+async def broadcast_for_custom_message(
+    bot: Bot,
+    users: list[int],
+    text: str,
+    disable_notification: bool = False,
+    reply_markup: InlineKeyboardMarkup = None,
+):
+    count = 0
+    try:
+        for user_id in users:
+            if await send_message(
+                bot, user_id, text, disable_notification, reply_markup
+            ):
+                count += 1
+            await asyncio.sleep(0.1)
     finally:
         logging.info(f"{count} messages successful sent.")
 
