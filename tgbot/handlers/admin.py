@@ -1,3 +1,6 @@
+import asyncio
+import csv
+
 from aiogram import Router, Bot, F
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
@@ -9,6 +12,7 @@ from tgbot.filters.admin import AdminFilter
 from tgbot.keyboards.inline import make_post_keyboard
 from tgbot.misc.states import AdminMakePost
 from tgbot.services.broadcaster import broadcast
+from aiogram.types import FSInputFile
 
 admin_router = Router()
 admin_router.message.filter(AdminFilter())
@@ -57,3 +61,21 @@ async def admin_make_post(message: Message, state: FSMContext):
 
     await message.reply("🎉 Розсилка завершена! Для повторної розсилки використай /post")
     await state.clear()
+
+
+@admin_router.message(Command("dump"))
+async def admin_dump_db(message: Message):
+    db = Database()
+    dump_data = db.dump_db()
+
+    with open("db_dump.csv", "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["id", "telegram_id", "name", "username", "phone", "email"])
+        writer.writerows(dump_data)
+
+    await message.reply("Вже формую дамп бази даних)")
+    await asyncio.sleep(5)
+
+    agenda = FSInputFile("db_dump.csv")
+
+    await bot.send_document(chat_id=message.chat.id, document=agenda)
