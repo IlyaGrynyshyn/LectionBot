@@ -18,7 +18,7 @@ admin_router = Router()
 admin_router.message.filter(AdminFilter())
 
 config = load_config(".env")
-bot = Bot(token=config.tg_bot.token, parse_mode="HTML")
+bot = Bot(token=config.tg_bot.token)
 
 
 @admin_router.message(CommandStart())
@@ -46,8 +46,8 @@ async def admin_cancel_make_post(query: CallbackQuery, state: FSMContext):
 @admin_router.message(AdminMakePost.make_post)
 async def admin_make_post(message: Message, state: FSMContext):
     db = Database()
-    telegram_users = db.select_all_users_by_user_id()
-    result_list = [item[0] for item in telegram_users]
+    telegram_users: list[tuple] = db.select_all_users_by_user_id()
+    result_list: list = [item[0] for item in telegram_users]
     print(result_list)
     admin_ids = result_list
     if message.from_user.id not in admin_ids:
