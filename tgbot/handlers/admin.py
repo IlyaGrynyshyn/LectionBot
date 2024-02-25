@@ -47,16 +47,17 @@ async def admin_cancel_make_post(query: CallbackQuery, state: FSMContext):
 async def admin_make_post(message: Message, state: FSMContext):
     db = Database()
     telegram_users: list[tuple] = db.select_all_users_by_user_id()
-    result_list: list = [item[0] for item in telegram_users]
-    print(result_list)
-    admin_ids = result_list
-    if message.from_user.id not in admin_ids:
+    admin_ids: list = [item[0] for item in telegram_users]
+    if message.from_user.id not in config.tg_bot.admin_ids:
         return
-    if not message.text and not message.photo and not message.video:
+
+    if not message.text and not (message.photo or message.video):
         await message.reply(
             "‼ Ти не ввела текст або не прикріпила медіафайл для розсилки."
         )
         return
+
+
     await broadcast(bot, admin_ids, message=message, content_type=message.content_type)
 
     await message.reply("🎉 Розсилка завершена! Для повторної розсилки використай /post")
