@@ -64,3 +64,4 @@ venv.bak/
 cache/
 
 main.db
+db_dump.csv
