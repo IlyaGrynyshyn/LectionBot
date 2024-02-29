@@ -5,15 +5,19 @@ import betterlogging as bl
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from tgbot.config import load_config, Config
 from tgbot.db.sqllite import Database
 from tgbot.handlers import routers_list
+from tgbot.middlewares.apscheduler_middleware import SchedulerMiddleware
 from tgbot.middlewares.config import ConfigMiddleware
 
 from tgbot.services.broadcaster import broadcast_for_custom_message
 
 DB = Database()
+
+scheduler = AsyncIOScheduler(timezone="Europe/Kiev")
 
 
 async def on_startup(bot: Bot, admin_ids: list[int]):
@@ -38,6 +42,7 @@ def register_global_middlewares(dp: Dispatcher, config: Config, session_pool=Non
     """
     middleware_types = [
         ConfigMiddleware(config),
+        SchedulerMiddleware(scheduler)
         # DatabaseMiddleware(session_pool),
     ]
 

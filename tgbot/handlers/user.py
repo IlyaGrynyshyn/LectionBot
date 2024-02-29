@@ -8,7 +8,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from apscheduler.schedulers import SchedulerAlreadyRunningError
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler_di import ContextSchedulerDecorator
 
 from tgbot.config import load_config, Config
 from tgbot.db.sqllite import Database
@@ -18,8 +17,6 @@ user_router = Router()
 db = Database()
 config = load_config(".env")
 bot = Bot(token=config.tg_bot.token)
-
-scheduler = ContextSchedulerDecorator(AsyncIOScheduler(timezone="Europe/Kiev"))
 
 
 async def send_message_in_1_min(bot: Bot, user_id):
@@ -64,7 +61,7 @@ async def user_start(message: Message, state: FSMContext):
 
 
 @user_router.message(RegisterUser.registration_email)
-async def register_phone(message: Message, state: FSMContext):
+async def register_phone(message: Message, state: FSMContext, apscheduler:AsyncIOScheduler):
     email = message.text
     if re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
         db.add_user(
@@ -80,21 +77,21 @@ async def register_phone(message: Message, state: FSMContext):
         await asyncio.sleep(2)
         await state.clear()
         await send_message_in_1_min(bot, message.from_user.id)
-        scheduler.add_job(
+        apscheduler.add_job(
             send_message_in_2_min,
             trigger="date",
             run_date=datetime.now() + timedelta(seconds=20),
             kwargs={"bot": bot, "user_id": message.from_user.id},
         )
-        scheduler.add_job(
+        apscheduler.add_job(
             send_message_in_5_min,
             trigger="date",
             run_date=datetime.now() + timedelta(minutes=1),
             kwargs={"bot": bot, "user_id": message.from_user.id},
         )
         try:
-            if scheduler.state == 0:
-                scheduler.start()
+            if apscheduler.state == 0:
+                apscheduler.start()
         except SchedulerAlreadyRunningError as e:
             print(e)
     else:
