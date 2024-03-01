@@ -8,10 +8,11 @@ class SchedulerMiddleware(BaseMiddleware):
     def __init__(self, scheduler: AsyncIOScheduler):
         self.scheduler = scheduler
 
-    async def __call__(self,
-                       handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
-                       event: TelegramObject,
-                       date: Dict[str, Any]
-                       ) -> Any:
+    async def __call__(
+        self,
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
+        date: Dict[str, Any],
+    ) -> Any:
         date["apscheduler"] = self.scheduler
         return await handler(event, date)
