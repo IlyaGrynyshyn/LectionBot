@@ -19,25 +19,20 @@ config = load_config(".env")
 bot = Bot(token=config.tg_bot.token)
 
 
-async def send_message_in_1_min(bot: Bot, user_id):
-    text = """Спрацюємось з тобою💆🏼‍♀️♥️. За твій виділений час - тримай безкоштовний урок і посібник по REELS. Кажуть, тобі важко створювати REELS і взагалі зрозуміти алгоритми інсти - тому в цьому уроці ти отримаєш стратегію і НАВІТЬ ТАБЛИЦЮ ДЛЯ РЕГУЛЯРНОСТІ\nhttps://shorturl.at/irJV3 \n\nВ цьому уроці Альона ділиться своїми кроками та досвідом, який актуальний зараз для блогів та бізнесів"""
+async def send_message_in_5_sec(bot: Bot, user_id):
+    text = """Спрацюємось з тобою💆🏼‍♀️♥️. За твій виділений час - тримай авторську систему від Альони по фокусуванню та самодисципліні \n\nhttps://alennamaer.notion.site/SELF-DISCIPLINE-alennamaer-4aad21cbbf39480189ab16bec7f48e46?pvs=4"""
     await bot.send_message(user_id, text=text)
 
 
-async def send_message_in_2_min(bot: Bot, user_id):
+async def send_message_in_20_sec(bot: Bot, user_id):
     text = """
-     ІНТЕНСИВ почнеться завтра, тому до цього часу ти можеш засвоїти попередній урок і готуватися🫂..
-    """
-    await bot.send_message(user_id, text=text)
-
-
-async def send_message_in_5_min(bot: Bot, user_id):
-    text = """
-     1. Привіт, привіт✨ - Лекція 1 «ЯК НОВАЧКУ ВИСТРОЇТИ СИСТЕМУ РОСТУ»
+Привіт, привіт✨ - Лекція 1 «ЯК НОВАЧКУ ВИСТРОЇТИ СИСТЕМУ РОСТУ»
 
 🪄Ціль лекції - допомогти тобі отримати чітку структуру та ясність в роботі з клієнтом, щоб ти могла планувати кожен етап роботи з легкістю, жити життя та екологічно насолоджуватися кожною сферою
 
-Просто тицяй і переходь до перегляду [не забудь про зручний одяг, кавочку/какао і записник - нотувати прийдеться багато🥹]
+Просто тицяй і переходь до перегляду [не забудь про зручний одяг, кавочку/какао і записник - нотувати прийдеться багато🥹] https://youtu.be/3-nKftP7Fm4?si=zWQPCv0JeTm4Cint
+
+https://alennamaer.notion.site/1-0b9fddda26904b75a10bb153e7ca1462?pvs=4
 
 *і не забувай відмічати в сторіс, якщо ловиш інсайти - нам буде приємно♥️
 
@@ -48,20 +43,34 @@ async def send_message_in_5_min(bot: Bot, user_id):
     await bot.send_message(user_id, text=text)
 
 
+async def send_message_in_1_day(bot: Bot, user_id):
+    text = """
+    Лекція 2 - Ефективні сторітелінги💌
+     https://www.notion.so/alennamaer/fa4d31ed002640c78f52380e1bb71769?pvs=4
+
+https://youtu.be/A2YY6qLEJDY?si=QRD5P5sdEqzxcKN5
+
+Посилання на те щоб потрапити в академію https://womensfreelanceclub.site/
+    """
+    await bot.send_message(user_id, text=text)
+
+
 @user_router.message(CommandStart())
 async def user_start(message: Message, state: FSMContext):
     if db.exist_user(telegram_id=message.from_user.id):
-        await message.answer("Привіт, я особистий бот alennamaer")
+        await message.answer("Привіт, я особистий бот alennamaer 💌")
         await state.clear()
     else:
         await state.set_state(RegisterUser.registration_email)
         await message.answer(
-            "Привіт, я особистий бот alennamaer\nДля початку поділись своєю поштою, щоб я точно більше не загубив тебе"
+            "Привіт, я особистий бот alennamaer 💌\nДля початку поділись своєю поштою, щоб я точно більше не загубив тебе"
         )
 
 
 @user_router.message(RegisterUser.registration_email)
-async def register_phone(message: Message, state: FSMContext, apscheduler:AsyncIOScheduler):
+async def register_phone(
+    message: Message, state: FSMContext, apscheduler: AsyncIOScheduler
+):
     email = message.text
     if re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
         db.add_user(
@@ -70,23 +79,19 @@ async def register_phone(message: Message, state: FSMContext, apscheduler:AsyncI
             telegram_id=message.from_user.id,
             email=email,
         )
-        message_text = """
-        🤗 Дякуємо, що залишила свою пошту
-        """
-        await message.answer(text=message_text)
         await asyncio.sleep(2)
         await state.clear()
-        await send_message_in_1_min(bot, message.from_user.id)
+        await send_message_in_5_sec(bot, message.from_user.id)
         apscheduler.add_job(
-            send_message_in_2_min,
+            send_message_in_20_sec,
             trigger="date",
-            run_date=datetime.now() + timedelta(seconds=20),
+            run_date=datetime.now() + timedelta(seconds=10),
             kwargs={"bot": bot, "user_id": message.from_user.id},
         )
         apscheduler.add_job(
-            send_message_in_5_min,
+            send_message_in_1_day,
             trigger="date",
-            run_date=datetime.now() + timedelta(minutes=1),
+            run_date=datetime.now() + timedelta(hours=24),
             kwargs={"bot": bot, "user_id": message.from_user.id},
         )
         try:
