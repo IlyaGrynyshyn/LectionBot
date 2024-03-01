@@ -69,7 +69,7 @@ async def admin_dump_db(message: Message):
     db = Database()
     dump_data = db.dump_db()
 
-    with open("db_dump.csv", "w", newline="") as file:
+    with open("db_dump.csv", "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerow(["id", "telegram_id", "name", "username", "phone", "email"])
         writer.writerows(dump_data)
