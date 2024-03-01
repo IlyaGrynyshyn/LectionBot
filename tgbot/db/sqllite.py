@@ -1,5 +1,6 @@
 import logging
 import sqlite3
+from datetime import datetime
 
 
 class Database:
@@ -43,7 +44,8 @@ class Database:
             name varchar(255) ,
             username varchar(255),
             phone integer,
-            email varchar(255)
+            email varchar(255),
+            date datetime
 );
         """
         return self.execute(sql=sql, commit=True)
@@ -55,9 +57,10 @@ class Database:
         phone: int = None,
         email: str = None,
         username: str = None,
+        date: datetime = datetime.now(),
     ):
-        sql = "INSERT INTO Users(telegram_id, name, phone, email, username) VALUES (?,?,?,?,?)"
-        parameters = (telegram_id, name, phone, email, username)
+        sql = "INSERT INTO Users(telegram_id, name, phone, email, username, date) VALUES (?,?,?,?,?,?)"
+        parameters = (telegram_id, name, phone, email, username, date)
         return self.execute(sql, parameters=parameters, commit=True)
 
     def update_phone(self, phone: int, telegram_id: int):

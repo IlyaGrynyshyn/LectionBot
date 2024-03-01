@@ -74,7 +74,7 @@ async def admin_dump_db(message: Message):
         writer.writerow(["id", "telegram_id", "name", "username", "phone", "email"])
         writer.writerows(dump_data)
 
-    await message.reply("Вже формую дамп бази даних)")
+    await message.reply("Вже формую дамп бази даних")
     await asyncio.sleep(5)
 
     agenda = FSInputFile("db_dump.csv")
