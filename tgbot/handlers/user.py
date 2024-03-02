@@ -78,6 +78,7 @@ async def register_phone(
             username=message.from_user.username,
             telegram_id=message.from_user.id,
             email=email,
+            date=datetime.now()
         )
         await asyncio.sleep(2)
         await state.clear()

@@ -57,7 +57,7 @@ class Database:
         phone: int = None,
         email: str = None,
         username: str = None,
-        date: datetime = datetime.now(),
+        date: datetime = None,
     ):
         sql = "INSERT INTO Users(telegram_id, name, phone, email, username, date) VALUES (?,?,?,?,?,?)"
         parameters = (telegram_id, name, phone, email, username, date)
